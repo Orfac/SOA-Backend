@@ -14,12 +14,12 @@ import javax.servlet.http.HttpServletResponse
 
 @WebServlet(name = "SpaceMarines", value = ["/marines"])
 class SpaceMarineServlet : HttpServlet() {
-  var entityManager : EntityManager = EntityManagerConfig.getEntityManager()
+  lateinit var dbService : DatabaseService
   val marines = listOf(getMarine("vasya"), getMarine("petya"))
 
   override fun doGet(req: HttpServletRequest, resp: HttpServletResponse) {
 //    val connection = DatabaseService().getConnection()
-    entityManager.persist(marines[0])
+
     val idParameter = req.getParameter("id")
     if (idParameter == null) {
       Marshallers.MARINE_LIST.marshal(SpaceMarineList(marines), resp.writer)
@@ -38,6 +38,9 @@ class SpaceMarineServlet : HttpServlet() {
     super.doPost(req, resp)
   }
 
+  override fun doPut(req: HttpServletRequest?, resp: HttpServletResponse?) {
+
+  }
   private fun handleGetById(req: HttpServletRequest, resp: HttpServletResponse, id: Int) {
     try {
       Marshallers.MARINE.marshal(marines[id], resp.writer)
@@ -51,7 +54,6 @@ fun getMarine(name: String): SpaceMarine {
   val coordinates = Coordinates(1, 2f)
   val chapter = Chapter("string", "legion1", 1, "World1")
   return SpaceMarine(
-      1,
       name,
       coordinates,
       LocalDateTime.now(),

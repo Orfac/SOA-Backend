@@ -4,7 +4,9 @@ import xml.LocalDateTimeAdapter;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -70,7 +72,6 @@ public class SpaceMarine {
   public SpaceMarine() { }
 
   public SpaceMarine(
-      final long id,
       final String name,
       final Coordinates coordinates,
       final LocalDateTime creationDate,
@@ -80,7 +81,6 @@ public class SpaceMarine {
       final MeleeWeapon meleeWeapon,
       final Chapter chapter
   ) {
-    this.id = id;
     this.name = name;
     this.coordinates = coordinates;
     this.creationDate = creationDate;

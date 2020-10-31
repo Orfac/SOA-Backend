@@ -1,16 +1,26 @@
 package service
 
-import exceptions.DbException
+import config.EntityManagerConfig
+import config.Utils
 import model.SpaceMarine
-import model.SpaceMarineList
-import xml.Marshallers
-import xml.Unmarshallers
-import java.io.StringWriter
-import java.sql.Connection
-import java.sql.DriverManager
-import java.sql.SQLException
+import javax.persistence.EntityManager
 
+object DatabaseService {
+  fun save(spaceMarine: SpaceMarine) {
+    entityManager.transaction.begin()
+    entityManager.persist(spaceMarine)
+    entityManager.transaction.commit()
+  }
 
-class DatabaseService() {
-  
+  fun get(): List<SpaceMarine> {
+    val table = Utils.SpaceMarineTableName
+    return entityManager.createQuery("SELECT e FROM $table e").resultList as List<SpaceMarine>
+  }
+
+  fun getById(id : Int) : SpaceMarine{
+    return entityManager.find(SpaceMarine::class.java, id)
+  }
+
+  var entityManager: EntityManager = EntityManagerConfig.getEntityManager()
+
 }

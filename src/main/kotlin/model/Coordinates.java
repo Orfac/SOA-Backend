@@ -8,19 +8,17 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
 
 @XmlRootElement(name = "Coordinates")
 @XmlAccessorType(XmlAccessType.FIELD)
-@Entity
-public class Coordinates {
+public class Coordinates implements Serializable {
   @XmlElement
   @Min(value = -231, message = "X should be greater than -232")
-  @Id
   private long x; //Значение поля должно быть больше -232
   @XmlElement
   @Min(value = 48, message = "Y should be greater than -47")
   @NotNull(message = "Coordinates should have y variable")
-  @Id
   private Float y; //Значение поля должно быть больше -47, Поле не может быть null
 
   public Coordinates(){}
