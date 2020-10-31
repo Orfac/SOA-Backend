@@ -1,7 +1,10 @@
 import config.EntityManagerConfig
 import model.*
+import org.eclipse.jetty.http.HttpStatus
 import service.DatabaseService
 import xml.Marshallers
+import xml.Unmarshallers
+import java.io.StringReader
 import java.lang.IndexOutOfBoundsException
 import java.lang.Integer.parseInt
 import java.lang.NumberFormatException
@@ -14,14 +17,17 @@ import javax.servlet.http.HttpServletResponse
 
 @WebServlet(name = "SpaceMarines", value = ["/marines"])
 class SpaceMarineServlet : HttpServlet() {
-  lateinit var dbService : DatabaseService
-  val marines = listOf(getMarine("vasya"), getMarine("petya"))
+  var dbService = DatabaseService
+  private val marinesInit = listOf(getMarine("vasya"), getMarine("petya"))
+
+  init {
+    dbService.save(marinesInit)
+  }
 
   override fun doGet(req: HttpServletRequest, resp: HttpServletResponse) {
-//    val connection = DatabaseService().getConnection()
-
     val idParameter = req.getParameter("id")
     if (idParameter == null) {
+      val marines = dbService.get()
       Marshallers.MARINE_LIST.marshal(SpaceMarineList(marines), resp.writer)
     } else {
       try {
@@ -38,12 +44,18 @@ class SpaceMarineServlet : HttpServlet() {
     super.doPost(req, resp)
   }
 
-  override fun doPut(req: HttpServletRequest?, resp: HttpServletResponse?) {
-
+  override fun doPut(req: HttpServletRequest, resp: HttpServletResponse) {
+    val marshalledMarineToSave = req.getParameter("marine")
+    val marine: SpaceMarine =
+        Unmarshallers.MARINE.unmarshal(StringReader(marshalledMarineToSave)) as SpaceMarine
+    dbService.save(marine)
+    resp.status = HttpStatus.CREATED_201
   }
+
   private fun handleGetById(req: HttpServletRequest, resp: HttpServletResponse, id: Int) {
     try {
-      Marshallers.MARINE.marshal(marines[id], resp.writer)
+      val marine = dbService.getById(id)
+      Marshallers.MARINE.marshal(marine, resp.writer)
     } catch (ex: IndexOutOfBoundsException) {
       resp.sendError(404, "There is no spacemarine with such an id")
     }

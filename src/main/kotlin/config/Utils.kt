@@ -1,5 +1,5 @@
 package config
 
 object Utils{
-  const val  SpaceMarineTableName = "spacemarine"
+  const val  SpaceMarineTableName = "SpaceMarine"
 }
