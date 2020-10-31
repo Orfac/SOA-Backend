@@ -18,7 +18,15 @@ import javax.servlet.http.HttpServletResponse
 @WebServlet(name = "SpaceMarines", value = ["/marines"])
 class SpaceMarineServlet : HttpServlet() {
   var dbService = DatabaseService
-  private val marinesInit = listOf(getMarine("vasya"), getMarine("petya"))
+  private val marinesInit =
+      listOf<SpaceMarine>(
+          getMarine("vasya"), getMarine("petya"),
+          getMarine("Vova"), getMarine("Immanuil1"),
+          getMarine("vova0"), getMarine("Immanuil2"),
+          getMarine("vova1"), getMarine("Immanuil Velikiy"),
+          getMarine("vova2123"), getMarine("Privet kto"),
+          getMarine("vova3123"), getMarine("Ya petr")
+      )
 
   init {
     dbService.save(marinesInit)
@@ -28,7 +36,13 @@ class SpaceMarineServlet : HttpServlet() {
     val idParameter = req.getParameter("id")
     if (idParameter == null) {
       val marines = dbService.get()
-      Marshallers.MARINE_LIST.marshal(SpaceMarineList(marines), resp.writer)
+      val pageSize = req.getParameter("pageSize")
+      val pageNumber = req.getParameter("pageNumber")
+      if (pageNumber != null && pageSize != null) {
+        handlePageable(marines, pageNumber, pageSize, resp)
+      } else {
+        Marshallers.MARINE_LIST.marshal(SpaceMarineList(marines), resp.writer)
+      }
     } else {
       try {
         val id = parseInt(idParameter)
@@ -37,6 +51,26 @@ class SpaceMarineServlet : HttpServlet() {
         resp.sendError(400, "Id should be an integer value")
       }
 
+    }
+  }
+
+  private fun handlePageable(
+    marines: List<SpaceMarine>,
+    pageNumberString: String,
+    pageSizeString: String,
+    resp: HttpServletResponse
+  ) {
+    val pageNumber = pageNumberString.toInt()
+    val pageSize = pageSizeString.toInt()
+    val additionValue = if (marines.size % pageSize == 0) 0 else 1
+    val firstIndex = pageSize * (pageNumber - 1)
+    val secondIndex = Math.min(pageSize * (pageNumber), marines.size - 1)
+    val pageableSpaceMarineList =
+        PageableSpaceMarineList(marines.slice(firstIndex..secondIndex), pageSize, pageNumber)
+    if (pageableSpaceMarineList.marines.size == 0){
+      resp.sendError(404)
+    } else {
+      Marshallers.PAGEABLE_SPACE_MARINE_LIST.marshal(pageableSpaceMarineList, resp.writer)
     }
   }
 

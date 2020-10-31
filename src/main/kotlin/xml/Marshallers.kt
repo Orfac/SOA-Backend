@@ -1,6 +1,7 @@
 package xml
 
 import model.Chapter
+import model.PageableSpaceMarineList
 import model.SpaceMarine
 import model.SpaceMarineList
 import javax.xml.bind.JAXBContext
@@ -11,6 +12,11 @@ object Marshallers {
   val CHAPTER = initChapterMarshaller()
   val MARINE = initSpaceMarineMarshaller()
   val MARINE_LIST = initSpaceMarineListMarshaller()
+  val PAGEABLE_SPACE_MARINE_LIST = initPageableSpaceMarineListMarshaller()
+
+  private fun initPageableSpaceMarineListMarshaller(): Marshaller {
+    return initMarshaller(PageableSpaceMarineList::class.java)
+  }
 
   private fun initSpaceMarineListMarshaller(): Marshaller {
     return initMarshaller(SpaceMarineList::class.java)
