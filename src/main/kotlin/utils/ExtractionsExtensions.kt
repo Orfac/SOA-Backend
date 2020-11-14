@@ -31,6 +31,11 @@ fun HttpServletRequest.isPageable(): Boolean {
   return pageNumberString != null && pageSizeString != null
 }
 
+fun HttpServletRequest.isSorting():Boolean{
+  val sortingString = this.getParameter("sortBy")
+  return sortingString != null
+}
+
  fun HttpServletRequest.getId(): Long {
   val parts = this.pathInfo.split("/")
   if (parts.size != 2 || parts[0] != "") throw RequestHandlingException("Wrong url format")

@@ -1,24 +1,13 @@
-import config.EntityManagerConfig
 import exceptions.RequestHandlingException
 import model.*
-import org.eclipse.jetty.http.HttpStatus
 import service.DatabaseService
-import utils.PageableParameters
-import utils.getPageableParams
-import utils.isPageable
+import utils.*
 import xml.Marshallers
-import xml.Unmarshallers
-import java.io.StringReader
-import java.lang.IndexOutOfBoundsException
-import java.lang.Integer.parseInt
-import java.lang.NumberFormatException
 import java.time.LocalDateTime
-import javax.persistence.EntityManager
 import javax.servlet.annotation.WebServlet
 import javax.servlet.http.HttpServlet
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
-import javax.validation.ValidatorFactory
 import kotlin.math.min
 
 @WebServlet(name = "SpaceMarines", value = ["/marines"])
@@ -40,7 +29,24 @@ class SpaceMarineCollectionServlet : HttpServlet() {
   }
 
   override fun doGet(req: HttpServletRequest, resp: HttpServletResponse) {
-    val marines = dbService.get()
+    var marines : List<SpaceMarine>
+    marines = if (req.isSorting()){
+      val sortingFields = req.getParameter("sortBy").split(",")
+      require(sortingFields.all {
+        it.toCharArray().all { it1 ->
+          it1 in 'a'..'z' || it1 in 'A'..'Z'
+        }
+      })
+      dbService.get(sortingFields)
+    } else {
+      dbService.get()
+    }
+
+
+    marines = filterByRequest(marines,req)
+
+
+
     if (req.isPageable()) {
       try {
         val pageableParameters = req.getPageableParams()
@@ -75,20 +81,6 @@ class SpaceMarineCollectionServlet : HttpServlet() {
       Marshallers.PAGEABLE_SPACE_MARINE_LIST.marshal(pageableSpaceMarineList, resp.writer)
     }
   }
-
-  override fun doPost(req: HttpServletRequest, resp: HttpServletResponse) {
-    super.doPost(req, resp)
-  }
-
-  override fun doPut(req: HttpServletRequest, resp: HttpServletResponse) {
-    val marshalledMarineToSave = req.parameterMap["marine"]?.first()
-    val marine: SpaceMarine =
-        Unmarshallers.MARINE.unmarshal(StringReader(marshalledMarineToSave)) as SpaceMarine
-    dbService.save(marine)
-    resp.status = HttpStatus.CREATED_201
-  }
-
-
 }
 
 fun getMarine(name: String): SpaceMarine {

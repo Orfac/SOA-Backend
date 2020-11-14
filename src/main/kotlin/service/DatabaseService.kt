@@ -9,27 +9,37 @@ object DatabaseService {
   var entityManager: EntityManager = EntityManagerConfig.getEntityManager()
 
   fun save(spaceMarine: SpaceMarine) {
-    persistMarine(spaceMarine)
+    saveMarine(spaceMarine)
   }
 
   fun save(spaceMarines: List<SpaceMarine>) {
 
     for (spaceMarine in spaceMarines) {
-      persistMarine(spaceMarine)
+      saveMarine(spaceMarine)
     }
 
   }
 
   fun get(): List<SpaceMarine> {
     val table = Utils.SpaceMarineTableName
-    return entityManager.createQuery("SELECT e FROM $table e").resultList as List<SpaceMarine>
+    val list = entityManager.createQuery("SELECT e FROM $table e")
+        .resultList as List<SpaceMarine>
+    return list.sortedBy { it.id }
+  }
+
+  fun get(sortingFields: List<String>): List<SpaceMarine> {
+    val table = Utils.SpaceMarineTableName
+    val connectedFields = sortingFields.joinToString()
+    return entityManager
+        .createNativeQuery("SELECT * FROM $table  ORDER BY $connectedFields", SpaceMarine::class.java)
+        .resultList as List<SpaceMarine>
   }
 
   fun getById(id: Long): SpaceMarine {
     return entityManager.find(SpaceMarine::class.java, id)
   }
 
-  fun updateById(id:Long, marine: SpaceMarine){
+  fun updateById(id: Long, marine: SpaceMarine) {
     val existedMarine = getById(id)
     existedMarine.category = marine.category
     existedMarine.chapter = marine.chapter
@@ -38,14 +48,10 @@ object DatabaseService {
     existedMarine.heartCount = marine.heartCount
     existedMarine.meleeWeapon = marine.meleeWeapon
     existedMarine.name = marine.name
-    persistMarine(existedMarine)
+    saveMarine(existedMarine)
   }
 
-  fun saveMarine(marine: SpaceMarine){
-    persistMarine(marine)
-  }
-
-  private fun persistMarine(marine: SpaceMarine) {
+  fun saveMarine(marine: SpaceMarine) {
     entityManager.transaction.begin()
     entityManager.persist(marine)
     entityManager.transaction.commit()

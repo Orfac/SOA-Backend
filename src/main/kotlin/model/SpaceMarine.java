@@ -2,6 +2,7 @@ package model;
 
 import org.eclipse.persistence.annotations.PrimaryKey;
 import xml.LocalDateTimeAdapter;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;

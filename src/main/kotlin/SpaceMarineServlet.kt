@@ -23,7 +23,7 @@ class SpaceMarineServlet : HttpServlet() {
       } catch (ex: IndexOutOfBoundsException) {
         resp.sendError(404, "There is no spacemarine with such an id")
       }
-    } catch (ex : RequestHandlingException){
+    } catch (ex: RequestHandlingException) {
       resp.sendError(400, ex.message)
     }
 
@@ -32,8 +32,8 @@ class SpaceMarineServlet : HttpServlet() {
   override fun doDelete(req: HttpServletRequest, resp: HttpServletResponse) {
     try {
       val id = req.getId()
-        dbService.deleteById(id)
-    } catch (ex : RequestHandlingException){
+      dbService.deleteById(id)
+    } catch (ex: RequestHandlingException) {
       resp.sendError(400, ex.message)
     }
 
@@ -43,8 +43,8 @@ class SpaceMarineServlet : HttpServlet() {
     try {
       val id = req.getId()
       val spaceMarine = Unmarshallers.MARINE.unmarshal(req.reader) as SpaceMarine
-      dbService.updateById(id,spaceMarine)
-    } catch (ex : RequestHandlingException){
+      dbService.updateById(id, spaceMarine)
+    } catch (ex: RequestHandlingException) {
       resp.sendError(400, ex.message)
     }
   }
@@ -52,8 +52,15 @@ class SpaceMarineServlet : HttpServlet() {
   override fun doPost(req: HttpServletRequest, resp: HttpServletResponse) {
     try {
       val id = req.getId()
-      dbService.deleteById(id)
-    } catch (ex : RequestHandlingException){
+      val marinesCount = dbService.get().size.toLong()
+      if (id - 1  == marinesCount) {
+        val spaceMarine = Unmarshallers.MARINE.unmarshal(req.reader) as SpaceMarine
+        dbService.save(spaceMarine)
+      } else {
+        resp.sendError(403, "You cannot put new marine at $id, please put at ${marinesCount-1}")
+      }
+
+    } catch (ex: RequestHandlingException) {
       resp.sendError(400, ex.message)
     }
   }
