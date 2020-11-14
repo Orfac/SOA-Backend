@@ -1,11 +1,13 @@
 package model;
 
+import org.eclipse.persistence.annotations.PrimaryKey;
 import xml.LocalDateTimeAdapter;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.PrimaryKeyJoinColumn;
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -23,7 +25,7 @@ import java.time.LocalDateTime;
 @XmlAccessorType(XmlAccessType.FIELD)
 @Entity
 public class SpaceMarine {
-  @XmlAttribute
+  @XmlElement
   @Id
   @GeneratedValue
   private long id;
