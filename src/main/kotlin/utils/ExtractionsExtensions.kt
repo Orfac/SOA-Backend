@@ -31,17 +31,23 @@ fun HttpServletRequest.isPageable(): Boolean {
   return pageNumberString != null && pageSizeString != null
 }
 
-fun HttpServletRequest.isSorting():Boolean{
+fun HttpServletRequest.isSorting(): Boolean {
   val sortingString = this.getParameter("sortBy")
   return sortingString != null
 }
 
- fun HttpServletRequest.getId(): Long {
+fun HttpServletRequest.getId(): Long {
   val parts = this.pathInfo.split("/")
   if (parts.size != 2 || parts[0] != "") throw RequestHandlingException("Wrong url format")
   try {
     return parts[1].toLong()
-  } catch (ex : NumberFormatException){
+  } catch (ex: NumberFormatException) {
     throw RequestHandlingException("Id must be integer value")
+  }
+}
+
+fun String.isEnglishAlphabet(): Boolean {
+  return this.toCharArray().all { it1 ->
+    it1 in 'a'..'z' || it1 in 'A'..'Z'
   }
 }

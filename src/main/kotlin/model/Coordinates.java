@@ -17,7 +17,7 @@ public class Coordinates implements Serializable {
   @Min(value = -231, message = "X should be greater than -232")
   private long x; //Значение поля должно быть больше -232
   @XmlElement
-  @Min(value = 48, message = "Y should be greater than -47")
+  @Min(value = -46, message = "Y should be greater than -47")
   @NotNull(message = "Coordinates should have y variable")
   private Float y; //Значение поля должно быть больше -47, Поле не может быть null
 

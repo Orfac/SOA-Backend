@@ -1,15 +1,17 @@
+import config.Utils
 import exceptions.RequestHandlingException
 import model.SpaceMarine
 import service.DatabaseService
 import utils.getId
 import xml.Marshallers
 import xml.Unmarshallers
-import java.lang.IndexOutOfBoundsException
-import javax.servlet.ServletRequest
 import javax.servlet.annotation.WebServlet
 import javax.servlet.http.HttpServlet
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
+import javax.validation.Validation
+import javax.validation.Validator
+import javax.validation.ValidatorFactory
 
 @WebServlet(name = "SpaceMarine", value = ["/marines/*"])
 class SpaceMarineServlet : HttpServlet() {
@@ -33,7 +35,7 @@ class SpaceMarineServlet : HttpServlet() {
     try {
       val id = req.getId()
       dbService.deleteById(id)
-    } catch (ex: RequestHandlingException) {
+    } catch (ex: Exception) {
       resp.sendError(400, ex.message)
     }
 
@@ -43,27 +45,18 @@ class SpaceMarineServlet : HttpServlet() {
     try {
       val id = req.getId()
       val spaceMarine = Unmarshallers.MARINE.unmarshal(req.reader) as SpaceMarine
-      dbService.updateById(id, spaceMarine)
-    } catch (ex: RequestHandlingException) {
-      resp.sendError(400, ex.message)
-    }
-  }
-
-  override fun doPost(req: HttpServletRequest, resp: HttpServletResponse) {
-    try {
-      val id = req.getId()
-      val marinesCount = dbService.get().size.toLong()
-      if (id - 1  == marinesCount) {
-        val spaceMarine = Unmarshallers.MARINE.unmarshal(req.reader) as SpaceMarine
-        dbService.save(spaceMarine)
+      val constraints = Utils.validator.validate(spaceMarine)
+      if (constraints.isEmpty()){
+        dbService.updateById(id, spaceMarine)
       } else {
-        resp.sendError(403, "You cannot put new marine at $id, please put at ${marinesCount-1}")
+        resp.sendError(400, constraints.joinToString())
       }
-
-    } catch (ex: RequestHandlingException) {
+    } catch (ex: Exception) {
       resp.sendError(400, ex.message)
     }
   }
+
+
 
 
 }

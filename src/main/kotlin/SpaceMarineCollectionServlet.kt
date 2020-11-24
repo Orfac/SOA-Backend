@@ -1,8 +1,11 @@
+import config.Utils
 import exceptions.RequestHandlingException
 import model.*
 import service.DatabaseService
 import utils.*
 import xml.Marshallers
+import xml.Unmarshallers
+import java.lang.Exception
 import java.time.LocalDateTime
 import javax.servlet.annotation.WebServlet
 import javax.servlet.http.HttpServlet
@@ -25,27 +28,24 @@ class SpaceMarineCollectionServlet : HttpServlet() {
       )
 
   init {
-    dbService.save(marinesInit)
+    try {
+      dbService.save(marinesInit)
+    } catch (ex: Exception) {
+      val i = 1
+    }
   }
 
   override fun doGet(req: HttpServletRequest, resp: HttpServletResponse) {
-    var marines : List<SpaceMarine>
-    marines = if (req.isSorting()){
+    var marines: List<SpaceMarine>
+    marines = if (req.isSorting()) {
       val sortingFields = req.getParameter("sortBy").split(",")
-      require(sortingFields.all {
-        it.toCharArray().all { it1 ->
-          it1 in 'a'..'z' || it1 in 'A'..'Z'
-        }
-      })
+      require(sortingFields.all { it.isEnglishAlphabet() })
       dbService.get(sortingFields)
     } else {
       dbService.get()
     }
 
-
-    marines = filterByRequest(marines,req)
-
-
+    marines = filterByRequest(marines, req)
 
     if (req.isPageable()) {
       try {
@@ -60,6 +60,22 @@ class SpaceMarineCollectionServlet : HttpServlet() {
     }
 
 
+  }
+
+  override fun doPost(req: HttpServletRequest, resp: HttpServletResponse) {
+    try {
+      val spaceMarine = Unmarshallers.MARINE.unmarshal(req.reader) as SpaceMarine
+      val constraints = Utils.validator.validate(spaceMarine)
+      if (constraints.isEmpty()) {
+        dbService.save(spaceMarine)
+      } else {
+        resp.sendError(400, constraints.joinToString())
+      }
+
+
+    } catch (ex: RequestHandlingException) {
+      resp.sendError(400, ex.message)
+    }
   }
 
   private fun handlePageable(
