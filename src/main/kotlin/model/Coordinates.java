@@ -14,10 +14,10 @@ import java.io.Serializable;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Coordinates implements Serializable {
   @XmlElement
-  @Min(value = -231, message = "X should be greater than -232")
+  @Min(value = -231, message = "X should be greater or equal to -231")
   private long x; //Значение поля должно быть больше -232
   @XmlElement
-  @Min(value = -46, message = "Y should be greater than -47")
+  @Min(value = -46, message = "Y should be greater or equal to -46")
   @NotNull(message = "Coordinates should have y variable")
   private Float y; //Значение поля должно быть больше -47, Поле не может быть null
 

@@ -22,7 +22,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.time.LocalDateTime;
 
-@XmlRootElement(name = "SpaceMarine")
+
 @XmlAccessorType(XmlAccessType.FIELD)
 @Entity
 public class SpaceMarine {

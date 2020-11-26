@@ -11,9 +11,10 @@ object Utils {
       "heart_count", "category", "melee_weapon", "chapter_name", "chapter_parent_legion",
       "chapter_marines_count", "chapter_world"
   )
-  private var factory: ValidatorFactory = Validation.buildDefaultValidatorFactory()
-  var validator: Validator
-  init {
-    validator = factory.validator
+  val validator = initValidator()
+
+  private fun initValidator(): Validator {
+    val factory: ValidatorFactory = Validation.buildDefaultValidatorFactory()
+    return factory.validator
   }
 }

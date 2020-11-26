@@ -1,6 +1,10 @@
 package utils
 
 import exceptions.RequestHandlingException
+import model.SpaceMarine
+import xml.Unmarshallers
+import xml.dto.XmlSpaceMarine
+import java.io.Reader
 import java.lang.NumberFormatException
 import javax.servlet.ServletRequest
 import javax.servlet.http.HttpServletRequest
@@ -51,3 +55,11 @@ fun String.isEnglishAlphabet(): Boolean {
     it1 in 'a'..'z' || it1 in 'A'..'Z'
   }
 }
+
+fun Reader.getMarine() : SpaceMarine {
+  val xmlSpaceMarineObject = Unmarshallers.XML_MARINE.unmarshal(this)
+  val xmlSpaceMarine = xmlSpaceMarineObject as XmlSpaceMarine
+  return xmlSpaceMarine.toSpaceMarine()
+}
+
+

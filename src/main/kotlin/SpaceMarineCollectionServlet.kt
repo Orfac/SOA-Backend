@@ -5,12 +5,14 @@ import service.DatabaseService
 import utils.*
 import xml.Marshallers
 import xml.Unmarshallers
+import xml.dto.XmlSpaceMarine
 import java.lang.Exception
 import java.time.LocalDateTime
 import javax.servlet.annotation.WebServlet
 import javax.servlet.http.HttpServlet
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
+import javax.xml.bind.JAXBException
 import kotlin.math.min
 
 @WebServlet(name = "SpaceMarines", value = ["/marines"])
@@ -36,8 +38,7 @@ class SpaceMarineCollectionServlet : HttpServlet() {
   }
 
   override fun doGet(req: HttpServletRequest, resp: HttpServletResponse) {
-    var marines: List<SpaceMarine>
-    marines = if (req.isSorting()) {
+    var marines: List<SpaceMarine> = if (req.isSorting()) {
       val sortingFields = req.getParameter("sortBy").split(",")
       require(sortingFields.all { it.isEnglishAlphabet() })
       dbService.get(sortingFields)
@@ -64,16 +65,16 @@ class SpaceMarineCollectionServlet : HttpServlet() {
 
   override fun doPost(req: HttpServletRequest, resp: HttpServletResponse) {
     try {
-      val spaceMarine = Unmarshallers.MARINE.unmarshal(req.reader) as SpaceMarine
+      val spaceMarine = req.reader.getMarine()
       val constraints = Utils.validator.validate(spaceMarine)
       if (constraints.isEmpty()) {
         dbService.save(spaceMarine)
       } else {
         resp.sendError(400, constraints.joinToString())
       }
-
-
     } catch (ex: RequestHandlingException) {
+      resp.sendError(400, ex.message)
+    } catch (ex: JAXBException){
       resp.sendError(400, ex.message)
     }
   }

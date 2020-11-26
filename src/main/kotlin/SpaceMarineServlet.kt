@@ -1,17 +1,13 @@
 import config.Utils
 import exceptions.RequestHandlingException
-import model.SpaceMarine
 import service.DatabaseService
 import utils.getId
+import utils.getMarine
 import xml.Marshallers
-import xml.Unmarshallers
 import javax.servlet.annotation.WebServlet
 import javax.servlet.http.HttpServlet
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
-import javax.validation.Validation
-import javax.validation.Validator
-import javax.validation.ValidatorFactory
 
 @WebServlet(name = "SpaceMarine", value = ["/marines/*"])
 class SpaceMarineServlet : HttpServlet() {
@@ -44,7 +40,7 @@ class SpaceMarineServlet : HttpServlet() {
   override fun doPut(req: HttpServletRequest, resp: HttpServletResponse) {
     try {
       val id = req.getId()
-      val spaceMarine = Unmarshallers.MARINE.unmarshal(req.reader) as SpaceMarine
+      val spaceMarine = req.reader.getMarine()
       val constraints = Utils.validator.validate(spaceMarine)
       if (constraints.isEmpty()){
         dbService.updateById(id, spaceMarine)
