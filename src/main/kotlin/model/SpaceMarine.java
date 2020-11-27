@@ -24,11 +24,13 @@ import java.time.LocalDateTime;
 
 
 @XmlAccessorType(XmlAccessType.FIELD)
+@XmlRootElement(name = "SpaceMarine")
 @Entity
 public class SpaceMarine {
   @XmlElement
   @Id
   @GeneratedValue
+  @Min(1)
   private long id;
   //Значение поля должно быть больше 0, Значение этого поля должно быть уникальным, Значение этого поля должно генерироваться автоматически
 

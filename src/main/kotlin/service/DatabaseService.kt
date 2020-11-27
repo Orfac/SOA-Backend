@@ -2,7 +2,9 @@ package service
 
 import config.EntityManagerConfig
 import config.Utils
+import exceptions.NotFoundException
 import model.SpaceMarine
+import java.lang.IllegalStateException
 import javax.persistence.EntityManager
 
 object DatabaseService {
@@ -36,7 +38,11 @@ object DatabaseService {
   }
 
   fun getById(id: Long): SpaceMarine {
-    return entityManager.find(SpaceMarine::class.java, id)
+    return try {
+      entityManager.find(SpaceMarine::class.java, id)
+    } catch (ex : IllegalStateException){
+      throw NotFoundException("space marine with id = ${id} was not found ")
+    }
   }
 
   fun updateById(id: Long, marine: SpaceMarine) {

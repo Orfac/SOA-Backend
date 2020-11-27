@@ -5,8 +5,6 @@ import service.DatabaseService
 import utils.*
 import xml.Marshallers
 import xml.Unmarshallers
-import xml.dto.XmlSpaceMarine
-import java.lang.Exception
 import java.time.LocalDateTime
 import javax.servlet.annotation.WebServlet
 import javax.servlet.http.HttpServlet
@@ -65,7 +63,7 @@ class SpaceMarineCollectionServlet : HttpServlet() {
 
   override fun doPost(req: HttpServletRequest, resp: HttpServletResponse) {
     try {
-      val spaceMarine = req.reader.getMarine()
+      val spaceMarine = Unmarshallers.XML_MARINE.unmarshal(req.reader) as SpaceMarine
       val constraints = Utils.validator.validate(spaceMarine)
       if (constraints.isEmpty()) {
         dbService.save(spaceMarine)
@@ -75,7 +73,7 @@ class SpaceMarineCollectionServlet : HttpServlet() {
     } catch (ex: RequestHandlingException) {
       resp.sendError(400, ex.message)
     } catch (ex: JAXBException){
-      resp.sendError(400, ex.message)
+      resp.sendError(422, ex.message)
     }
   }
 

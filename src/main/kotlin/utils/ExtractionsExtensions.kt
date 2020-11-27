@@ -2,8 +2,10 @@ package utils
 
 import exceptions.RequestHandlingException
 import model.SpaceMarine
+import rest.dto.IdRequestDto
+import rest.dto.MarineRequestDto
+import rest.dto.MarineWithIdRequestDto
 import xml.Unmarshallers
-import xml.dto.XmlSpaceMarine
 import java.io.Reader
 import java.lang.NumberFormatException
 import javax.servlet.ServletRequest
@@ -40,26 +42,30 @@ fun HttpServletRequest.isSorting(): Boolean {
   return sortingString != null
 }
 
-fun HttpServletRequest.getId(): Long {
-  val parts = this.pathInfo.split("/")
-  if (parts.size != 2 || parts[0] != "") throw RequestHandlingException("Wrong url format")
-  try {
-    return parts[1].toLong()
-  } catch (ex: NumberFormatException) {
-    throw RequestHandlingException("Id must be integer value")
-  }
-}
-
 fun String.isEnglishAlphabet(): Boolean {
   return this.toCharArray().all { it1 ->
     it1 in 'a'..'z' || it1 in 'A'..'Z'
   }
 }
 
-fun Reader.getMarine() : SpaceMarine {
-  val xmlSpaceMarineObject = Unmarshallers.XML_MARINE.unmarshal(this)
-  val xmlSpaceMarine = xmlSpaceMarineObject as XmlSpaceMarine
-  return xmlSpaceMarine.toSpaceMarine()
+fun parseMarine(request: HttpServletRequest): MarineRequestDto {
+  val spaceMarine = Unmarshallers.XML_MARINE.unmarshal(request.reader) as SpaceMarine
+  return MarineRequestDto(spaceMarine)
 }
 
+fun parseId(request: HttpServletRequest): IdRequestDto {
+  val parts = request.pathInfo.split("/")
+  if (parts.size != 2 || parts[0] != "") throw RequestHandlingException("Wrong url format")
+  return try {
+    IdRequestDto(parts[1].toLong())
+  } catch (ex: NumberFormatException) {
+    throw RequestHandlingException("Id must be integer value")
+  }
+}
+
+fun parseIdWithMarine(request: HttpServletRequest): MarineWithIdRequestDto {
+  val idRequestDto = parseId(request)
+  val spaceMarineDto = parseMarine(request)
+  return MarineWithIdRequestDto(spaceMarineDto.spaceMarine, idRequestDto.id)
+}
 

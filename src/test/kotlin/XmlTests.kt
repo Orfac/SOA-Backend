@@ -1,32 +1,17 @@
+import model.SpaceMarine
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
-import org.junit.jupiter.params.provider.ValueSource
-import utils.getMarine
 import xml.Marshallers
 import xml.Unmarshallers
-import xml.dto.XmlSpaceMarine
 import java.io.StringReader
 import java.io.StringWriter
 import javax.xml.bind.JAXBException
 
 class XmlTests {
-  @Test
-  fun `can serialize and deserialize marine`() {
-    val stringObject = getXmlResource("default_marine.xml")
-
-    val xmlSpaceMarineObject = Unmarshallers.XML_MARINE.unmarshal(StringReader(stringObject))
-    val xmlSpaceMarine = xmlSpaceMarineObject as XmlSpaceMarine
-    val spaceMarine = xmlSpaceMarine.toSpaceMarine()
-
-    val marshalledChapter = StringWriter()
-    Marshallers.MARINE.marshal(spaceMarine, marshalledChapter)
-    assertEquals(stringObject, marshalledChapter.toString())
-  }
-
   companion object {
     @JvmStatic
     fun wrong_marines() = arrayOf(
@@ -37,7 +22,27 @@ class XmlTests {
         Arguments.of("broken_schema.xml"),
         Arguments.of("broken_sub_element.xml")
     )
+    @JvmStatic
+    fun good_marines() = arrayOf(
+        Arguments.of("default_marine.xml"),
+        Arguments.of("marine_with_missing_field.xml")
+    )
   }
+
+  @ParameterizedTest
+  @MethodSource("good_marines")
+  fun `can serialize and deserialize marine`(input: String) {
+    val stringObject = getXmlResource(input)
+
+    val xmlSpaceMarineObject = Unmarshallers.XML_MARINE.unmarshal(StringReader(stringObject))
+    val spaceMarine = xmlSpaceMarineObject as SpaceMarine
+
+    val marshalledChapter = StringWriter()
+    Marshallers.MARINE.marshal(spaceMarine, marshalledChapter)
+    assertEquals(stringObject, marshalledChapter.toString())
+  }
+
+
   @ParameterizedTest
   @MethodSource("wrong_marines")
   fun `throws exception when deserializes wrong marine`(input: String) {
