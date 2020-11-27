@@ -5,10 +5,12 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 public class LocalDateTimeAdapter extends XmlAdapter<String, LocalDateTime> {
-  private final DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+
+  private final DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy_HH:mm:ss:SS");
 
   @Override
   public LocalDateTime unmarshal(String xml) throws Exception {
