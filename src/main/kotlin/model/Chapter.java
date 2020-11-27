@@ -1,5 +1,7 @@
 package model;
 
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
@@ -13,10 +15,12 @@ import java.util.Objects;
 
 @XmlRootElement(name = "Chapter")
 @XmlAccessorType(XmlAccessType.FIELD)
+@Embeddable
 public class Chapter implements Serializable {
   @XmlElement
   @NotNull(message = "Chapter should have a name")
   @NotBlank(message = "Chapter's name should not be blank")
+  @Column(name = "chapter_name")
   private String name; //Поле не может быть null, Строка не может быть пустой
 
   @XmlElement

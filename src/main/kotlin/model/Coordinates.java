@@ -1,5 +1,6 @@
 package model;
 
+import javax.persistence.Embeddable;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.validation.constraints.Min;
@@ -12,6 +13,7 @@ import java.io.Serializable;
 
 @XmlRootElement(name = "Coordinates")
 @XmlAccessorType(XmlAccessType.FIELD)
+@Embeddable
 public class Coordinates implements Serializable {
   @XmlElement
   @Min(value = -231, message = "X should be greater or equal to -231")
