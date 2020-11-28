@@ -43,6 +43,7 @@ class SpaceMarineCollectionController(request: HttpServletRequest, response: Htt
   fun doPost() {
     doRequest<MarineRequestDto> {
       dbService.saveMarine(it.spaceMarine)
+      response.status = HttpStatus.CREATED_201
     }
   }
 
