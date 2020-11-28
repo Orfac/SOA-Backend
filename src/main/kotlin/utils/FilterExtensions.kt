@@ -1,6 +1,8 @@
 package utils
 
 import config.Utils
+import model.AstartesCategory
+import model.MeleeWeapon
 import model.SpaceMarine
 import xml.LocalDateTimeAdapter
 import java.text.SimpleDateFormat
@@ -51,10 +53,10 @@ fun List<SpaceMarine>.filterByValue(
         it.heartCount == parameter.toInt()
       }
       "category" -> {
-        it.category.name == parameter
+        it.category == AstartesCategory.valueOf(parameter)
       }
       "melee_weapon" -> {
-        it.meleeWeapon.name == parameter
+        it.meleeWeapon == MeleeWeapon.valueOf(parameter)
       }
       "chapter_name" -> {
         it.chapter.name == parameter

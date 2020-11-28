@@ -19,7 +19,7 @@ class ValidationTests {
   @Test
   fun `id request dto with nonvalid id is non-valid`() {
     val idRequestDto = IdRequestDto(0) as RequestDto
-    val violations: Set<ConstraintViolation<RequestDto>> = validator.validate(idRequestDto)
+    val violations = validator.validate(idRequestDto)
     assert(violations.isNotEmpty())
   }
 }

@@ -55,7 +55,6 @@ fun getMarine(name: String): SpaceMarine {
   return SpaceMarine(
       name,
       coordinates,
-      LocalDateTime.now(),
       1,
       1,
       AstartesCategory.AGGRESSOR,

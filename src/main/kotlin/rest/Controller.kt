@@ -10,6 +10,7 @@ import utils.parseId
 import utils.parseIdWithMarine
 import utils.parseMarine
 import utils.parseMarineCollectionDto
+import java.lang.IllegalArgumentException
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 import javax.validation.Valid
@@ -27,17 +28,20 @@ open class Controller(val request: HttpServletRequest, val response: HttpServlet
       processFunction(requestDto)
     } catch (ex: RequestHandlingException) {
       response.status = BAD_REQUEST_400
-      response.writer.write(ex.message)
+      response.writer.write(ex.message ?: "Bad request parameters")
+    } catch (ex: IllegalArgumentException) {
+      response.status = BAD_REQUEST_400
+      response.writer.write(ex.message ?: "Bad request parameters")
     } catch (ex: JAXBException) {
       response.status = UNPROCESSABLE_ENTITY_422
       if (ex is UnmarshalException) {
         response.writer.write(ex.linkedException.localizedMessage)
       } else {
-        response.writer.write(ex.linkedException.localizedMessage)
+        response.writer.write(ex.message ?: "Xml Processing failed")
       }
     } catch (ex: NotFoundException) {
       response.status = NOT_FOUND_404
-      response.writer.write(ex.message)
+      response.writer.write(ex.message ?: "Item not found")
     }
   }
 
@@ -55,7 +59,7 @@ open class Controller(val request: HttpServletRequest, val response: HttpServlet
   open fun <T : RequestDto> validate(@Valid requestDto: T) {
     val constraintViolations = validator.validate(requestDto)
     if (constraintViolations.isNotEmpty()) {
-      throw RequestHandlingException(constraintViolations.joinToString())
+      throw RequestHandlingException(constraintViolations.map { it.message }.joinToString(";"))
     }
   }
 }

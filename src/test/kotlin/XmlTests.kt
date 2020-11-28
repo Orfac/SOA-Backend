@@ -25,7 +25,8 @@ class XmlTests {
     @JvmStatic
     fun good_marines() = arrayOf(
         Arguments.of("default_marine.xml"),
-        Arguments.of("marine_with_missing_field.xml")
+        Arguments.of("marine_with_missing_field.xml"),
+        Arguments.of("default_marine_without_id.xml")
     )
   }
 

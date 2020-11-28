@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<SpaceMarine>
+    <name>vasya</name>
+    <coordinates>
+        <x>1</x>
+        <y>2.0</y>
+    </coordinates>
+    <creationDate>26-11-2020_02:31:36:34</creationDate>
+    <health>1</health>
+    <heartCount>1</heartCount>
+    <category>AGGRESSOR</category>
+    <meleeWeapon>CHAIN_SWORD</meleeWeapon>
+    <chapter>
+        <name>string</name>
+        <parentLegion>legion1</parentLegion>
+        <marinesCount>1</marinesCount>
+        <world>World1</world>
+    </chapter>
+</SpaceMarine>

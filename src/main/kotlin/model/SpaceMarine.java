@@ -1,5 +1,7 @@
 package model;
 
+import static org.eclipse.persistence.oxm.annotations.XmlMarshalNullRepresentation.EMPTY_NODE;
+import org.eclipse.persistence.oxm.annotations.XmlNullPolicy;
 import xml.LocalDateTimeAdapter;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -11,6 +13,7 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Null;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -25,7 +28,7 @@ public class SpaceMarine {
   @XmlElement
   @Id
   @GeneratedValue
-  private long id;
+  private Long id = null;
   //Значение поля должно быть больше 0, Значение этого поля должно быть уникальным, Значение этого поля должно генерироваться автоматически
 
   @XmlElement
@@ -41,7 +44,7 @@ public class SpaceMarine {
   @XmlElement
   @XmlJavaTypeAdapter(LocalDateTimeAdapter.class)
   @NotNull
-  private LocalDateTime creationDate;
+  private LocalDateTime creationDate = LocalDateTime.now();
   //Поле не может быть null, Значение этого поля должно генерироваться автоматически
 
   @XmlElement
@@ -70,7 +73,6 @@ public class SpaceMarine {
   public SpaceMarine(
       final String name,
       final Coordinates coordinates,
-      final LocalDateTime creationDate,
       final Long health,
       final Integer heartCount,
       final AstartesCategory category,
@@ -79,7 +81,6 @@ public class SpaceMarine {
   ) {
     this.name = name;
     this.coordinates = coordinates;
-    this.creationDate = creationDate;
     this.health = health;
     this.heartCount = heartCount;
     this.category = category;
