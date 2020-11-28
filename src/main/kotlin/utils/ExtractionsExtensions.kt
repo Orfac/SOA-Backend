@@ -2,11 +2,9 @@ package utils
 
 import config.Utils
 import exceptions.RequestHandlingException
+import model.AstartesCategory
 import model.SpaceMarine
-import rest.dto.IdRequestDto
-import rest.dto.MarineCollectionRequestDto
-import rest.dto.MarineRequestDto
-import rest.dto.MarineWithIdRequestDto
+import rest.dto.*
 import xml.Unmarshallers
 import java.io.Reader
 import java.lang.NumberFormatException
@@ -93,6 +91,23 @@ fun parseMarineCollectionDto(request: HttpServletRequest): MarineCollectionReque
 
 }
 
+fun parseCategory(request: HttpServletRequest): CategoryRequestDto {
+  if (request.pathInfo == null) throw RequestHandlingException("Wrong url format")
+  val parts = request.pathInfo.split("/")
+  if (parts.size != 2 || parts[0] != "") throw RequestHandlingException("Wrong url format")
+  return CategoryRequestDto(AstartesCategory.valueOf(parts[1]))
+}
+
+fun parseHealth(request: HttpServletRequest): HealthRequestDto {
+  if (request.pathInfo == null) throw RequestHandlingException("Wrong url format")
+  val parts = request.pathInfo.split("/")
+  if (parts.size != 2 || parts[0] != "") throw RequestHandlingException("Wrong url format")
+  return try {
+    HealthRequestDto(parts[1].toLong())
+  } catch (ex: NumberFormatException) {
+    throw RequestHandlingException("Health must be integer value")
+  }
+}
 private fun HttpServletRequest.checkIfCollectionRequest() {
   val parameterNames = this.parameterNames
   if (!parameterNames.toList().all {

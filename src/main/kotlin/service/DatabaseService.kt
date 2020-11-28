@@ -3,9 +3,12 @@ package service
 import config.EntityManagerConfig
 import config.Utils
 import exceptions.NotFoundException
+import model.AstartesCategory
 import model.SpaceMarine
 import java.lang.IllegalStateException
 import javax.persistence.EntityManager
+import kotlin.random.Random
+import kotlin.random.nextLong
 
 object DatabaseService {
   var entityManager: EntityManager = EntityManagerConfig.getEntityManager()
@@ -67,6 +70,18 @@ object DatabaseService {
     val marine = getById(id)
     entityManager.transaction.begin()
     entityManager.remove(marine)
+    entityManager.transaction.commit()
+
+  }
+
+  fun deleteRandomByCategory(category: AstartesCategory){
+    val marines = get().filter { it.category != null && it.category == category }
+    if (marines.isEmpty()) return
+
+    val randomIndex = Random.nextInt(0, marines.size)
+
+    entityManager.transaction.begin()
+    entityManager.remove(marines[randomIndex])
     entityManager.transaction.commit()
 
   }

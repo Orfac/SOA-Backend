@@ -6,10 +6,7 @@ import exceptions.RequestHandlingException
 import org.eclipse.jetty.http.HttpStatus
 import org.eclipse.jetty.http.HttpStatus.*
 import rest.dto.*
-import utils.parseId
-import utils.parseIdWithMarine
-import utils.parseMarine
-import utils.parseMarineCollectionDto
+import utils.*
 import java.lang.IllegalArgumentException
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
@@ -52,6 +49,8 @@ open class Controller(val request: HttpServletRequest, val response: HttpServlet
       NoParametersRequestDto::class -> NoParametersRequestDto()
       MarineRequestDto::class -> parseMarine(request)
       MarineCollectionRequestDto::class -> parseMarineCollectionDto(request)
+      CategoryRequestDto::class -> parseCategory(request)
+      HealthRequestDto::class -> parseHealth(request)
       else -> throw RequestHandlingException("Cannot identify request dto")
     }
   }

@@ -29,11 +29,8 @@ class SpaceMarineCollectionServlet : HttpServlet() {
       )
 
   init {
-    try {
-      dbService.save(marinesInit)
-    } catch (ex: Exception) {
-      val i = 1
-    }
+    dbService.save(marinesInit)
+
   }
 
   override fun doGet(req: HttpServletRequest, resp: HttpServletResponse) {
@@ -51,7 +48,7 @@ class SpaceMarineCollectionServlet : HttpServlet() {
 
 fun getMarine(name: String): SpaceMarine {
   val coordinates = Coordinates(1, 2f)
-  val chapter = Chapter("string", "legion1", 1, "World1")
+  val chapter = Chapter("Thousand_of_sons", "legion1", 1000, "Prospero")
   return SpaceMarine(
       name,
       coordinates,
