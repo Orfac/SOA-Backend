@@ -1,8 +1,10 @@
 package utils
 
+import config.Utils
 import exceptions.RequestHandlingException
 import model.SpaceMarine
 import rest.dto.IdRequestDto
+import rest.dto.MarineCollectionRequestDto
 import rest.dto.MarineRequestDto
 import rest.dto.MarineWithIdRequestDto
 import xml.Unmarshallers
@@ -13,8 +15,8 @@ import javax.servlet.http.HttpServletRequest
 import javax.validation.constraints.Min
 
 data class PageableParameters(
-  @Min(1, message = "Page size starts from 1") val pageSize: Int,
-  @Min(1, message = "Page index starts from 1") val pageIndex: Int
+  @get:Min(1, message = "Page size starts from 1") var pageSize: Int,
+  @get:Min(1, message = "Page index starts from 1") var pageIndex: Int
 )
 
 fun HttpServletRequest.getPageableParams(): PageableParameters {
@@ -69,3 +71,33 @@ fun parseIdWithMarine(request: HttpServletRequest): MarineWithIdRequestDto {
   return MarineWithIdRequestDto(spaceMarineDto.spaceMarine, idRequestDto.id)
 }
 
+fun parseMarineCollectionDto(request: HttpServletRequest): MarineCollectionRequestDto {
+  request.checkIfCollectionRequest()
+
+  val filterParams = mutableListOf<Pair<String, String>>()
+  request.parameterMap.forEach {
+    if (it.key in Utils.PossibleValues) {
+      filterParams.add(Pair(it.key, it.value[0]))
+    }
+  }
+
+  val isSorting = request.isSorting()
+  val sortBy: String? = if (isSorting) request.getParameter("sortBy") else null
+
+  val isPageable = request.isPageable()
+  val pageableParameters: PageableParameters? =
+      if (isPageable) request.getPageableParams() else null
+
+
+  return MarineCollectionRequestDto(pageableParameters, filterParams, sortBy)
+
+}
+
+private fun HttpServletRequest.checkIfCollectionRequest() {
+  val parameterNames = this.parameterNames
+  if (!parameterNames.toList().all {
+        it in Utils.PossibleValues || it == "pageSize" || it == "pageNumber" || it == "sortBy"
+      }) {
+    throw RequestHandlingException("Extra parameters except pagination, sorting and filtering are added")
+  }
+}

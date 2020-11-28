@@ -1,6 +1,7 @@
 import config.Utils
 import exceptions.RequestHandlingException
 import model.*
+import rest.SpaceMarineCollectionController
 import service.DatabaseService
 import utils.*
 import xml.Marshallers
@@ -36,66 +37,16 @@ class SpaceMarineCollectionServlet : HttpServlet() {
   }
 
   override fun doGet(req: HttpServletRequest, resp: HttpServletResponse) {
-    var marines: List<SpaceMarine> = if (req.isSorting()) {
-      val sortingFields = req.getParameter("sortBy").split(",")
-      require(sortingFields.all { it.isEnglishAlphabet() })
-      dbService.get(sortingFields)
-    } else {
-      dbService.get()
-    }
-
-    marines = filterByRequest(marines, req)
-
-    if (req.isPageable()) {
-      try {
-        val pageableParameters = req.getPageableParams()
-        handlePageable(marines, pageableParameters, resp)
-      } catch (ex: RequestHandlingException) {
-        resp.sendError(400, ex.message)
-      }
-
-    } else {
-      Marshallers.MARINE_LIST.marshal(SpaceMarineList(marines), resp.writer)
-    }
-
-
+    val controller = SpaceMarineCollectionController(req, resp)
+    controller.doGet()
   }
 
   override fun doPost(req: HttpServletRequest, resp: HttpServletResponse) {
-    try {
-      val spaceMarine = Unmarshallers.XML_MARINE.unmarshal(req.reader) as SpaceMarine
-      val constraints = Utils.validator.validate(spaceMarine)
-      if (constraints.isEmpty()) {
-        dbService.save(spaceMarine)
-      } else {
-        resp.sendError(400, constraints.joinToString())
-      }
-    } catch (ex: RequestHandlingException) {
-      resp.sendError(400, ex.message)
-    } catch (ex: JAXBException){
-      resp.sendError(422, ex.message)
-    }
+    val controller = SpaceMarineCollectionController(req, resp)
+    controller.doPost()
   }
 
-  private fun handlePageable(
-    marines: List<SpaceMarine>,
-    params: PageableParameters,
-    resp: HttpServletResponse
-  ) {
 
-    val firstIndex = params.pageSize * (params.pageIndex - 1)
-    val secondIndex = min(params.pageSize * (params.pageIndex), marines.size)
-    val pageableSpaceMarineList =
-        PageableSpaceMarineList(
-            marines.slice(firstIndex until secondIndex),
-            params.pageSize,
-            params.pageIndex)
-    if (pageableSpaceMarineList.marines.size == 0) {
-      resp.sendError(404)
-    } else {
-      Marshallers.PAGEABLE_SPACE_MARINE_LIST.marshal(pageableSpaceMarineList, resp.writer)
-    }
-  }
 }
 
 fun getMarine(name: String): SpaceMarine {

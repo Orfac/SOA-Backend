@@ -5,6 +5,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import model.Coordinates
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import rest.Controller
 import javax.servlet.http.HttpServletRequest
@@ -13,6 +14,7 @@ import javax.servlet.http.HttpServletResponse
 class ControllerTests {
 
   @Test
+  @Disabled
   fun `controller sends error if being invoked with non valid params`() {
     val request = mockk<HttpServletRequest>()
     val response = mockk<HttpServletResponse>()

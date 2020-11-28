@@ -22,7 +22,7 @@ fun filterByRequest(
   return marines
 }
 
-private fun List<SpaceMarine>.filterByValue(
+fun List<SpaceMarine>.filterByValue(
   filterName: String,
   parameter: String
 ): List<SpaceMarine> {

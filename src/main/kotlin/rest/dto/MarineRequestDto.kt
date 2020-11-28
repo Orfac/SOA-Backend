@@ -5,5 +5,5 @@ import javax.validation.Valid
 import javax.validation.constraints.Min
 
 data class MarineRequestDto(
-  @Valid val spaceMarine: SpaceMarine
+  @get:Valid val spaceMarine: SpaceMarine
 ) : RequestDto
