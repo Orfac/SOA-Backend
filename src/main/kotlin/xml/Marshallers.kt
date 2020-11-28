@@ -57,35 +57,34 @@ object Unmarshallers {
 
   private fun initUnmarshaller(entityClass: Class<*>): Unmarshaller {
     val context = JAXBContext.newInstance(entityClass)
-//    val schema = generateSchemaByContext(context)
+    val schema = generateSchemaByContext(context)
 
-    return context.createUnmarshaller()
-        //.also { it.schema = schema }
+    return context.createUnmarshaller().also { it.schema = schema }
   }
 
-//  private fun generateSchemaByContext(context: JAXBContext): Schema {
-//    val schemaDocs: MutableList<ByteArrayOutputStream> = ArrayList()
-//    context.generateSchema(object : SchemaOutputResolver() {
-//      @Throws(IOException::class)
-//      override fun createOutput(
-//        namespaceUri: String,
-//        suggestedFileName: String
-//      ): javax.xml.transform.Result {
-//        val outputStream = ByteArrayOutputStream()
-//        val streamResult = StreamResult(outputStream)
-//        schemaDocs.add(outputStream)
-//        streamResult.systemId = suggestedFileName
-//        return streamResult
-//      }
-//    })
-//
-//    val schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI)
-//    val size = schemaDocs.size
-//    val schemaSources: Array<Source?> = arrayOfNulls(size)
-//    for (i in 0 until size) {
-//      schemaSources[i] = StreamSource(
-//          ByteArrayInputStream(schemaDocs[i].toByteArray()))
-//    }
-//    return schemaFactory.newSchema(schemaSources)
-//  }
+  private fun generateSchemaByContext(context: JAXBContext): Schema {
+    val schemaDocs: MutableList<ByteArrayOutputStream> = ArrayList()
+    context.generateSchema(object : SchemaOutputResolver() {
+      @Throws(IOException::class)
+      override fun createOutput(
+        namespaceUri: String,
+        suggestedFileName: String
+      ): javax.xml.transform.Result {
+        val outputStream = ByteArrayOutputStream()
+        val streamResult = StreamResult(outputStream)
+        schemaDocs.add(outputStream)
+        streamResult.systemId = suggestedFileName
+        return streamResult
+      }
+    })
+
+    val schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI)
+    val size = schemaDocs.size
+    val schemaSources: Array<Source?> = arrayOfNulls(size)
+    for (i in 0 until size) {
+      schemaSources[i] = StreamSource(
+          ByteArrayInputStream(schemaDocs[i].toByteArray()))
+    }
+    return schemaFactory.newSchema(schemaSources)
+  }
 }
