@@ -7,9 +7,9 @@ import javax.servlet.http.HttpServlet
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
-@WebServlet(name = "SpaceMarinesDelete", value = ["/random*"])
+@WebServlet(name = "SpaceMarinesDelete", value = ["/random/*"])
 class DeleteRandomServlet : HttpServlet(){
-  val dbService = DatabaseService
+  private val dbService = DatabaseService
   override fun doDelete(req: HttpServletRequest, resp: HttpServletResponse) {
     val controller = Controller(req,resp)
     controller.doRequest<CategoryRequestDto> {
