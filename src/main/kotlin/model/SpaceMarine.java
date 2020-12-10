@@ -1,7 +1,5 @@
 package model;
 
-import static org.eclipse.persistence.oxm.annotations.XmlMarshalNullRepresentation.EMPTY_NODE;
-import org.eclipse.persistence.oxm.annotations.XmlNullPolicy;
 import xml.LocalDateTimeAdapter;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -13,7 +11,6 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Null;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;

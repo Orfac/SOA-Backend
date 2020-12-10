@@ -17,7 +17,6 @@ class XmlTests {
     fun wrong_marines() = arrayOf(
         Arguments.of("wrong_attribute.xml"),
         Arguments.of("wrong_element.xml"),
-        Arguments.of("missing_element.xml"),
         Arguments.of("broken_marine.xml"),
         Arguments.of("broken_schema.xml"),
         Arguments.of("broken_sub_element.xml")
